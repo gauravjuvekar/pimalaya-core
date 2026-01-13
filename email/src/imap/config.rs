@@ -142,7 +142,7 @@ impl ImapAuthConfig {
             }
             #[cfg(feature = "oauth2")]
             ImapAuthConfig::OAuth2(config) => {
-                config.reset().await.map_err(Error::ResetOAuthSecretsError)
+                config.provider.reset().await.map_err(Error::ResetOAuthSecretsError)
             }
         }
     }
@@ -163,6 +163,7 @@ impl ImapAuthConfig {
             }
             #[cfg(feature = "oauth2")]
             ImapAuthConfig::OAuth2(oauth2) => Ok(oauth2
+                .provider
                 .access_token()
                 .await
                 .map_err(Error::AccessTokenNotAvailable)?),
@@ -181,17 +182,19 @@ impl ImapAuthConfig {
             }
             #[cfg(feature = "oauth2")]
             Self::OAuth2(config) => {
-                if let Some(secret) = config.client_secret.as_mut() {
+                if let Some(secret) = config.provider.client_secret.as_mut() {
                     secret
                         .replace_with_keyring_if_empty(format!("{name}-imap-oauth2-client-secret"))
                         .map_err(Error::ReplacingUnidentifiedFailed)?;
                 }
 
                 config
+                    .provider
                     .access_token
                     .replace_with_keyring_if_empty(format!("{name}-imap-oauth2-access-token"))
                     .map_err(Error::ReplacingUnidentifiedFailed)?;
                 config
+                    .provider
                     .refresh_token
                     .replace_with_keyring_if_empty(format!("{name}-imap-oauth2-refresh-token"))
                     .map_err(Error::ReplacingUnidentifiedFailed)?;

@@ -269,6 +269,7 @@ pub async fn build_client(
                 Err(Error::ConnectTcpSmtpError(mail_send::Error::AuthenticationFailed(_))) => {
                     warn!("authentication failed, refreshing access token and retrying…");
                     oauth2_config
+                        .provider
                         .refresh_access_token()
                         .await
                         .map_err(|_| Error::RefreshingAccessTokenFailed)?;
@@ -286,6 +287,7 @@ pub async fn build_client(
                 Err(Error::ConnectTlsSmtpError(mail_send::Error::AuthenticationFailed(_))) => {
                     warn!("authentication failed, refreshing access token and retrying…");
                     oauth2_config
+                        .provider
                         .refresh_access_token()
                         .await
                         .map_err(|_| Error::RefreshingAccessTokenFailed)?;

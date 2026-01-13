@@ -1241,6 +1241,7 @@ impl ImapClientBuilder {
                         let access_token = match self.credentials.as_ref() {
                             Some(access_token) => access_token.to_string(),
                             None => oauth2
+                                .provider
                                 .access_token()
                                 .await
                                 .map_err(Error::RefreshAccessTokenError)?,
@@ -1254,6 +1255,7 @@ impl ImapClientBuilder {
                             warn!("authentication failed, refreshing access token and retrying…");
 
                             let access_token = oauth2
+                                .provider
                                 .refresh_access_token()
                                 .await
                                 .map_err(Error::RefreshAccessTokenError)?;
@@ -1283,6 +1285,7 @@ impl ImapClientBuilder {
                         let access_token = match self.credentials.as_ref() {
                             Some(access_token) => access_token.to_string(),
                             None => oauth2
+                                .provider
                                 .access_token()
                                 .await
                                 .map_err(Error::RefreshAccessTokenError)?,
@@ -1301,6 +1304,7 @@ impl ImapClientBuilder {
                             warn!("authentication failed, refreshing access token and retrying");
 
                             let access_token = oauth2
+                                .provider
                                 .refresh_access_token()
                                 .await
                                 .map_err(Error::RefreshAccessTokenError)?;

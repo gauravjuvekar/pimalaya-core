@@ -83,6 +83,7 @@ impl SmtpConfig {
             #[cfg(feature = "oauth2")]
             SmtpAuthConfig::OAuth2(oauth2) => {
                 let access_token = oauth2
+                    .provider
                     .access_token()
                     .await
                     .map_err(|_| Error::AccessTokenWasNotAvailable)?;
@@ -124,6 +125,7 @@ impl SmtpAuthConfig {
         #[cfg(feature = "oauth2")]
         if let Self::OAuth2(oauth2) = self {
             oauth2
+                .provider
                 .reset()
                 .await
                 .map_err(|_| Error::ResettingOAuthFailed)?;
@@ -143,6 +145,7 @@ impl SmtpAuthConfig {
         #[cfg(feature = "oauth2")]
         if let Self::OAuth2(oauth2) = self {
             oauth2
+                .provider
                 .configure(get_client_secret)
                 .await
                 .map_err(|_| Error::ConfiguringOAuthFailed)?;
@@ -163,17 +166,19 @@ impl SmtpAuthConfig {
             }
             #[cfg(feature = "oauth2")]
             SmtpAuthConfig::OAuth2(config) => {
-                if let Some(secret) = config.client_secret.as_mut() {
+                if let Some(secret) = config.provider.client_secret.as_mut() {
                     secret
                         .replace_with_keyring_if_empty(format!("{name}-smtp-oauth2-client-secret"))
                         .map_err(Error::ReplacingKeyringFailed)?;
                 }
 
                 config
+                    .provider
                     .access_token
                     .replace_with_keyring_if_empty(format!("{name}-smtp-oauth2-access-token"))
                     .map_err(Error::ReplacingKeyringFailed)?;
                 config
+                    .provider
                     .refresh_token
                     .replace_with_keyring_if_empty(format!("{name}-smtp-oauth2-refresh-token"))
                     .map_err(Error::ReplacingKeyringFailed)?;

@@ -24,6 +24,16 @@ pub struct OAuth2Config {
     /// for authentication.
     pub method: OAuth2Method,
 
+    pub provider: BasicOAuth2ProviderConfig,
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[cfg_attr(
+    feature = "derive",
+    derive(serde::Serialize, serde::Deserialize),
+    serde(rename_all = "kebab-case")
+)]
+pub struct BasicOAuth2ProviderConfig {
     /// Client identifier issued to the client during the registration process described by
     /// [Section 2.2](https://datatracker.ietf.org/doc/html/rfc6749#section-2.2).
     pub client_id: String,
@@ -68,13 +78,13 @@ pub struct OAuth2Config {
     pub scopes: OAuth2Scopes,
 }
 
-impl OAuth2Config {
+impl BasicOAuth2ProviderConfig {
     pub const LOCALHOST: &'static str = "localhost";
 
     /// Return the first available port on [`LOCALHOST`].
     pub fn get_first_available_port() -> Result<u16> {
         (49_152..65_535)
-            .find(|port| TcpListener::bind((OAuth2Config::LOCALHOST, *port)).is_ok())
+            .find(|port| TcpListener::bind((BasicOAuth2ProviderConfig::LOCALHOST, *port)).is_ok())
             .ok_or(Error::GetAvailablePortError)
     }
 
@@ -117,12 +127,12 @@ impl OAuth2Config {
 
         let redirect_host = match self.redirect_host.as_ref() {
             Some(host) => host.clone(),
-            None => OAuth2Config::LOCALHOST.to_owned(),
+            None => BasicOAuth2ProviderConfig::LOCALHOST.to_owned(),
         };
 
         let redirect_port = match self.redirect_port {
             Some(port) => port,
-            None => OAuth2Config::get_first_available_port()?,
+            None => BasicOAuth2ProviderConfig::get_first_available_port()?,
         };
 
         let client_secret = match self.client_secret.as_ref() {
@@ -200,12 +210,12 @@ impl OAuth2Config {
 
         let redirect_host = match self.redirect_host.as_ref() {
             Some(host) => host.clone(),
-            None => OAuth2Config::LOCALHOST.to_owned(),
+            None => BasicOAuth2ProviderConfig::LOCALHOST.to_owned(),
         };
 
         let redirect_port = match self.redirect_port {
             Some(port) => port,
-            None => OAuth2Config::get_first_available_port()?,
+            None => BasicOAuth2ProviderConfig::get_first_available_port()?,
         };
 
         let client_secret = match self.client_secret.as_ref() {
