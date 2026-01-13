@@ -32,7 +32,7 @@ impl ReadBuffer {
         self.cursor > 0 && !self.buffer.is_empty()
     }
 
-    fn to_io_slice_mut(&mut self) -> [IoSliceMut; 1] {
+    fn to_io_slice_mut(&mut self) -> [IoSliceMut<'_>; 1] {
         [IoSliceMut::new(self.buffer.as_mut())]
     }
 
@@ -74,7 +74,7 @@ impl WriteBuffer {
         !self.buffer.is_empty()
     }
 
-    fn to_io_slices(&self) -> [IoSlice; 2] {
+    fn to_io_slices(&self) -> [IoSlice<'_>; 2] {
         let (init, tail) = self.buffer.as_slices();
         [IoSlice::new(init), IoSlice::new(tail)]
     }
